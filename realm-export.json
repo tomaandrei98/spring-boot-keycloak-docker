@@ -1,0 +1,77 @@
+{
+  "realm": "Toma",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "user" },
+      { "name": "admin" }
+    ],
+    "client": {
+      "toma-rest-api": [
+        {
+          "name": "client_user",
+          "composite": true,
+          "composites": {
+            "realm": ["user"]
+          }
+        },
+        {
+          "name": "client_admin",
+          "composite": true,
+          "composites": {
+            "realm": ["admin"]
+          }
+        }
+      ]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "toma-rest-api",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["*"],
+      "defaultRoles": []
+    }
+  ],
+  "users": [
+    {
+      "username": "toma",
+      "enabled": true,
+      "email": "toma@example.com",
+      "firstName": "Toma",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "toma",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"],
+      "clientRoles": {
+        "toma-rest-api": ["client_admin"]
+      }
+    },
+    {
+      "username": "ionut",
+      "enabled": true,
+      "email": "ionut@example.com",
+      "firstName": "Ionut",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "ionut",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "toma-rest-api": ["client_user"]
+      }
+    }
+  ]
+}

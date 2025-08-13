@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.2
+    container_name: keycloak
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    command:
+      - start-dev
+      - --import-realm
+    ports:
+      - "8080:8080"
+    networks:
+      - keycloak-network
+
+  spring-keycloak-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-keycloak-app
+    depends_on:
+      - keycloak
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/Toma
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/Toma/protocol/openid-connect/certs
+      JWT_AUTH_CONVERTER_RESOURCE_ID: toma-rest-api
+      JWT_AUTH_CONVERTER_PRINCIPAL_ATTRIBUTE: preferred_username
+    ports:
+      - "8081:8081"
+    restart: always
+    networks:
+      - keycloak-network
+
+networks:
+  keycloak-network:
+    driver: bridge
